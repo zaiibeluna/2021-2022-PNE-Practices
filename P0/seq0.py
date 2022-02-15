@@ -20,10 +20,8 @@ def seq_read_fasta(filename):
    return seq
 
 
-def seq_len(seq):
-    list_genes = ["U5", "FRAT1", "ADA", "FXN"]
-    for l in list_genes:
-
+def seq_count_base(filename):
+    
 
 
 
