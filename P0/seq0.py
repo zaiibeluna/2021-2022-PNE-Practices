@@ -14,14 +14,8 @@ def valid_filename():
             print("File does not exist. Provide another file.")
 
 def seq_read_fasta(filename):
-   FOLDER = "./sequences/"
-   seq = open(FOLDER + filename + ".txt", "r").read()
-   seq = seq[seq.find("\n"):].replace("\n", "")
-   return seq
-
-
-def seq_count_base(filename):
-    
-
-
+    FOLDER = "./sequences/"
+    seq = open(FOLDER + filename + ".txt", "r").read()
+    seq = seq[seq.find("\n"):].replace("\n", "")
+    return seq
 
