@@ -14,8 +14,13 @@ def valid_filename():
             print("File does not exist. Provide another file.")
 
 def seq_read_fasta(filename):
-    FOLDER = "./sequences/"
-    seq = open(FOLDER + filename + ".txt", "r").read()
-    seq = seq[seq.find("\n"):].replace("\n", "")
+    from pathlib import Path
+
+    file_contents = Path(filename).read_text()
+    lines = file_contents.splitlines()
+    body = lines[1:]
+    seq = ""
+    for line in body:
+        seq += line
     return seq
 
