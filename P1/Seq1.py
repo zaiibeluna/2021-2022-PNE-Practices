@@ -42,3 +42,4 @@ class Seq:
     def len(self):
         """Calculate the length of the sequence"""
         return len(self.strbases)
+

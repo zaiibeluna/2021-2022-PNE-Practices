@@ -1,8 +1,9 @@
 import socket
+import colorama
 
 # SERVER IP, PORT
-PORT = 8080
-IP = "192.168.124.179"
+PORT = 21000
+IP = "212.128.253.64"
 
 # First, create the socket
 # We will always use this parameters: AF_INET y SOCK_STREAM
@@ -18,7 +19,7 @@ s.send(str.encode("HELLO FROM THE CLIENT!!!"))
 # Receive data from the server
 msg = s.recv(2048)
 print("MESSAGE FROM THE SERVER:\n")
-print(msg.decode("utf-8"))
-
+colorama.init()
+print(colorama. Fore.RED + msg.decode("utf-8"))
 # Closing the socket
 s.close()
