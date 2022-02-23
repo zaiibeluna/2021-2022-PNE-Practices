@@ -28,3 +28,4 @@ print(f"Sequence 1: {s1}")
 print(f"  Length: {s1.len()}")
 print(f"Sequence 2: {s2}")
 print(f"  Length: {s2.len()}")
+

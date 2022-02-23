@@ -1,8 +1,13 @@
-import seq0
-FOLDER = "./sequences/"
+from seq0 import *
 
-list_genes = ["U5", "FRAT1", "ADA", "FXN", "RNU6_269P"]
-for l in list_genes:
-    print(len(seq0.seq_read_fasta(FOLDER + l)))
+FOLDER = "../Session-04/"
+GENES = ["U5", "FRAT1", "ADA", "FXN", "RNU6_269P"]
+
+print("----|Exercise 3|----")
+
+for gene in GENES:
+    filename = gene + ".txt"
+    sequence = seq_read_fasta(FOLDER + filename)
+    print(f"Gene {gene} ---> Length: {seq_len(sequence)}")
 
 
