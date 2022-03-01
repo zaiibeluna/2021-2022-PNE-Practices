@@ -3,8 +3,8 @@ import socket
 # SERVER IP, PORT
 # Write here the correct parameter for connecting to the
 # Teacher's server
-PORT = 21000
-IP = "212.128.253.64"
+PORT = 8000
+IP = "127.0.0.1"
 
 
 # First, create the socket
