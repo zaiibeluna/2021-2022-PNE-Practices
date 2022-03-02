@@ -1,16 +1,20 @@
 import socket
 
-# SERVER IP, PORT
-PORT = 8080
-IP = "192.168.124.179"
+# Teacher's server
+PORT = 8000
+IP = "localhost"
 
 while True:
-  # -- Ask the user for the message
+    # -- Ask the user for the message
+    msg = input("Introduce your message in the chat: ")
+    # -- Create the socket
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-  # -- Create the socket
+    # -- Establish the connection to the Server
+    s.connect((IP, PORT))
 
-  # -- Establish the connection to the Server
+    # -- Send the user message
+    s.send(str.encode(msg))
 
-  # -- Send the user message
-
-  # -- Close the socket
+    # -- Close the socket
+    s.close()

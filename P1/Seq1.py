@@ -1,45 +1,78 @@
 class Seq:
     """A class for representing sequences"""
 
-    def __init__(self, strbases="NULL" ):
+    BASES_ALLOWED = ['A', 'C', 'G', 'T']
+    COMPLEMENTS = {"A": "T", "T": "A", "C": "G", "G": "C"}
+
+    def __init__(self, bases="NULL" ):
         # Initialize the sequence with the value
         # passed as argument when creating the object
-        self.strbases = strbases
-        if self.strbases == "NULL":
+        self.bases = bases
+        if self.bases == "NULL":
+            self.bases = bases
             print("NULL Seq created!")
-        elif self.valid_sequence():
+        elif self.are_bases_valid(bases):
+            self.bases = bases
             print("New sequence created!")
         else:
-            self.strbases2 = "ERROR"
-            print("INVALID Seq!")
+            self.bases = "ERROR"
+            print("INVALID sequence detected!")
 
     @staticmethod
-    def valid_sequence2(sequence):
-        valid = True
+    def are_bases_valid(bases):
+        valid = len(bases) != 0
         i = 0
-        while i < len(sequence) and valid:
-            c = sequence[i]
-            if c != "A" and c != "C" and c != "G" and c != "T":
+        while valid and i < len(bases):
+            if bases[i] in Seq.BASES_ALLOWED:
+                i += 1
+            else:
                 valid = False
-            i += 1
-        return valid
-
-    def valid_sequence(self):
-        valid = True
-        i = 0
-        while i < len(self.strbases) and valid:
-            c = self.strbases[i]
-            if c != "A" and c != "C" and c != "G" and c != "T":
-                valid = False
-            i += 1
         return valid
 
     def __str__(self):
         """Method called when the object is being printed"""
         # -- We just return the string with the sequence
-        return self.strbases
+        return self.bases
 
     def len(self):
         """Calculate the length of the sequence"""
-        return len(self.strbases)
+        if self.bases == "NULL" or self.bases == "ERROR":
+            return 0
+        return len(self.bases)
+
+    def count_base(self, base):
+        if self.bases == "NULL" or self.bases == "ERROR":
+            return 0
+        return self.bases.count(base)
+
+    def count(self):
+        result = {}
+        for base in Seq.BASES_ALLOWED:
+            result[base] = self.count_base(base)
+        return result
+
+    def reverse(self):
+        if self.bases == "NULL" or self.bases == "ERROR":
+            return self.bases
+
+        return self.bases[::-1]
+
+    def complements(self):
+        if self.bases == "NULL" or self.bases == "ERROR":
+            return self.bases
+
+        result = ""
+        for base in self.bases:
+            result += Seq.COMPLEMENTS[base]
+        return result
+
+    def read_fasta(self, file_name):
+        from pathlib import Path
+
+        file_contents = Path(file_name).read_text()
+        lines = file_contents.splitlines()
+        body = lines[1:]
+        self.bases = "" #importante ponerlo
+        for line in body:
+            self.bases += line
 
