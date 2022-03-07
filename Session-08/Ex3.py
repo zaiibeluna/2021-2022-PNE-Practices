@@ -5,16 +5,12 @@ PORT = 8000
 IP = "localhost"
 
 while True:
-    # -- Ask the user for the message
     msg = input("Introduce your message in the chat: ")
-    # -- Create the socket
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-    # -- Establish the connection to the Server
-    s.connect((IP, PORT))
+    client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    client_socket.connect((IP, PORT))
 
-    # -- Send the user message
-    s.send(str.encode(msg))
+    msg_bytes = str.encode(msg)
+    client_socket.send(msg_bytes)
 
-    # -- Close the socket
-    s.close()
+    client_socket.close()

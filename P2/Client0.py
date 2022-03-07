@@ -11,13 +11,19 @@ class Client:
         result = (f"Connection to SERVER at {self.ip} PORT: {self.port}")
         return result
 
-    def talk(self):
+    def talk(self, msg):
         import socket
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.connect((self.ip, self.port))
-        s.send(str.encode(msg))
-        response = s.recv(2048).decode("utf-8")
-        s.close()
+        client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        client_socket.connect((IP, PORT))
+
+        msg_bytes = str.encode(msg)
+        client_socket.send(msg_bytes)
+
+        response_bytes = client_socket.recv(2048)
+        response = response_bytes.decode("utf-8")
+
+        client_socket.close()
+
         return response
 
 
