@@ -1,26 +1,26 @@
 import socket
 
-# Configure the Server's IP and PORT
 PORT = 8080
 IP = "127.0.0.1"
 
-# -- Step 1: create the socket
 ls = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-ls.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-
-# -- Step 2: Bind the socket to server's IP and PORT
 ls.bind((IP, PORT))
-
-# -- Step 3: Configure the socket for listening
+ls.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 ls.listen()
 
 print("The server is configured!")
 
-# -- Waits for a client to connect
 print("Waiting for Clients to connect")
-ls.accept()
+(client_socket, client_address) = ls.accept()
 
 print("A client has connected to the server!")
 
-# -- Close the socket
+msg_bytes = cs.recv(2048)
+msg = msg_bytes.decode("utf-8")
+print(f"Received Message: {msg}")
+response = "HELLO. I am the Happy Server :-)\n"
+response_bytes = response.encode()
+cs.send(response_bytes)
+
+cs.close()
 ls.close()
