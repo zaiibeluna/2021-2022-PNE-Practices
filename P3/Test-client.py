@@ -1,4 +1,4 @@
-from Seq-client import Client
+from Seq-Client import Client
 
 PORT = 8080
 IP = "127.0.0.1"
