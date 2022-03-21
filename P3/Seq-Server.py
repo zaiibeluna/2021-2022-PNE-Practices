@@ -7,6 +7,15 @@ PORT = 8080
 IP = "127.0.0.1"
 GENES = ["ADA", "FRAT1", "FXN", "RNU6_269P", "U5"]
 
+def get_command(gene_number):
+    gene = GENES[gene_number]
+    sequence = Seq()
+    file_name = os.path.join("..", "Genes", f"{gene}.txt") # file_name = "../Genes/U5.txt"
+    sequence.read_fasta(file_name)
+
+    response = f"{sequence}\n"
+    return response
+
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server_socket.setsockopt(socket.SOL_SOCKET, socket. SO_REUSEADDR, 1)
 try:
@@ -20,44 +29,52 @@ try:
         request_bytes = client_socket.recv(2048)
         request = request_bytes.decode("utf-8")
 
-        slices = request.split(" ")
-        command = slices[0]
-        termcolor.cprint(f"{command}", 'green')
+        try:
+            slices = request.split(" ")
+            command = slices[0]
+            termcolor.cprint(f"{command}", 'green')
 
-        response = ""
-        if command == "PING":
-            response = f"OK!\n"
-        elif command == "GET":
-            gene_number = int(slices[1])
-            gene = GENES[gene_number]
-            sequence = Seq()
-            #file_name = "../Genes/U5.txt"
-            file_name = os.path.join("..", "Genes", f"{gene}.txt")
-            sequence.read_fasta(file_name)
+            response = ""
+            if command == "PING" and len(slices) == 1:
+                response = f"OK!\n"
+            elif command == "GET" and len(slices) == 2:
+                gene_number = int(slices[1])
 
-            response = f"{sequence}\n"
-        elif command == "INFO":
-            bases = slices[1]
-            sequence = Seq(bases)
+                response = get_command(gene_number)
+            elif command == "INFO":
+                bases = slices[1]
+                sequence = Seq(bases)
 
-            response = f"{sequence.info()}\n"
-        elif command == "COMP":
-            bases = slices[1]
-            sequence = Seq(bases)
+                response = f"{sequence.info()}\n"
+            elif command == "COMP":
+                bases = slices[1]
+                sequence = Seq(bases)
 
-            response = f"{sequence.complements()}\n"
-        elif command == "REV":
-            bases = slices[1]
-            sequence = Seq(bases)
+                response = f"{sequence.complements()}\n"
+            elif command == "REV":
+                bases = slices[1]
+                sequence = Seq(bases)
 
-            response = f"{sequence.reverse()}\n"
-        elif command == "GENE":
-            gene = slices[1]
-            sequence = Seq()
-            file_name = os.path.join("..", "Genes", f"{gene}.txt")
-            sequence.read_fasta(file_name)
+                response = f"{sequence.reverse()}\n"
+            elif command == "GENE":
+                gene = slices[1]
+                sequence = Seq()
+                file_name = os.path.join("..", "Genes", f"{gene}.txt")
+                sequence.read_fasta(file_name)
 
-            response = f"{sequence}\n"
+                response = f"{sequence}\n"
+            elif command == "LEN":
+                if len(slices) == 1:
+                    sequence = Seq()
+                else:
+                    bases = slices[1]
+                    sequence = Seq(bases)
+
+                response = f"{sequence.len()}\n"
+            else:
+                response = "Invalid command\n"
+        except Exception: #IndexError, ValueError
+            response = f"ERROR\n"
         print(response)
         response_bytes = str.encode(response)
         client_socket.send(response_bytes)
