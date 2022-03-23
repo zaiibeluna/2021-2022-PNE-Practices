@@ -76,3 +76,12 @@ class Seq:
         for line in body:
             self.bases += line
 
+    def add(self):
+        if self.bases == "NULL" or self.bases == "ERROR":
+            print("We could not multiply the bases since the sequence is not correct.")
+        else:
+            result = {}
+            for base in Seq.BASES_ALLOWED:
+                result[base] = self.count_base(base)
+                add += result[base]
+            return add

@@ -82,3 +82,13 @@ class Seq:
         for base, count in self.count().items():
             result += f"{base}: {count} ({(count * 100) / self.len():.1f}%)\n"
         return result
+
+    def add(self):
+        if self.bases == "NULL" or self.bases == "ERROR":
+            print("We could not multiply the bases since the sequence is not correct.")
+        else:
+            result = {}
+            for base in Seq.BASES_ALLOWED:
+                result[base] = self.count_base(base)
+                add = result[base] + result[base]
+            return add

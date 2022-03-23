@@ -1,6 +1,6 @@
 import socket
 import termcolor
-import os # Operative System
+import os
 from Sequence import Seq
 
 PORT = 8080
@@ -67,6 +67,11 @@ try:
                     sequence = Seq(bases)
 
                 response = f"{sequence.len()}\n"
+            elif command == "ADD":
+                bases = slices[1]
+                sequence = Seq(bases)
+
+                response = f"{sequence.add()}\n"
             else:
                 response = "Invalid command\n"
         except Exception: #IndexError, ValueError
