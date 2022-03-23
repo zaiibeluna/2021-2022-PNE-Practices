@@ -7,14 +7,6 @@ PORT = 8080
 IP = "127.0.0.1"
 GENES = ["ADA", "FRAT1", "FXN", "RNU6_269P", "U5"]
 
-def get_command(gene_number):
-    gene = GENES[gene_number]
-    sequence = Seq()
-    file_name = os.path.join("..", "Genes", f"{gene}.txt") # file_name = "../Genes/U5.txt"
-    sequence.read_fasta(file_name)
-
-    response = f"{sequence}\n"
-    return response
 
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server_socket.setsockopt(socket.SOL_SOCKET, socket. SO_REUSEADDR, 1)
@@ -39,8 +31,12 @@ try:
                 response = f"OK!\n"
             elif command == "GET" and len(slices) == 2:
                 gene_number = int(slices[1])
+                gene = GENES[gene_number]
+                sequence = Seq()
+                file_name = os.path.join("..", "Genes", f"{gene}.txt")  # file_name = "../Genes/U5.txt"
+                sequence.read_fasta(file_name)
 
-                response = get_command(gene_number)
+                response = f"{sequence}\n"
             elif command == "INFO":
                 bases = slices[1]
                 sequence = Seq(bases)
