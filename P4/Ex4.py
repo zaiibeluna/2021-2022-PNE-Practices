@@ -21,21 +21,36 @@ def process_client(s):
     print("Request line: ", end="")
     termcolor.cprint(req_line, "green")
 
-    if path == "/info/G":
-        body = Path("index.html").read_text()
+    if path == "/info/A":
+        body = Path("A.html").read_text()
         status_line = "HTTP/1.1 200 OK\n"
         headers = "Content-Type: text/html\n"
         headers += f"Content-Length: {len(body)}\n"
         response_msg = status_line + headers + "\n" + body
         cs.send(response_msg.encode())
 
-    if path == "/info/T":
-        body = Path("index.html").read_text()
+    elif path == "/info/C":
+        body = Path("C.html").read_text()
         status_line = "HTTP/1.1 200 OK\n"
         headers = "Content-Type: text/html\n"
         headers += f"Content-Length: {len(body)}\n"
         response_msg = status_line + headers + "\n" + body
         cs.send(response_msg.encode())
+
+    body = ""
+    if path == "/info/A":
+        body = Path("A.html").read_text()
+    elif path == "/info/C":
+        body = Path("C.html").read_text()
+    elif path == "/info/G":
+        body = Path("G.html").read_text()
+    elif path == "/info/T":
+        body = Path("T.html").read_text()
+    status_line = "HTTP/1.1 200 OK\n"
+    headers = "Content-Type: text/html\n"
+    headers += f"Content-Length: {len(body)}\n"
+    response_msg = status_line + headers + "\n" + body
+    cs.send(response_msg.encode())
 
 ls = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 ls.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)

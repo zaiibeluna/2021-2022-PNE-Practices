@@ -40,53 +40,26 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
         print("Request line: ", end="")
         termcolor.cprint(req_line, "green")
 
-        if path == "/info/A":
+        body = ""
+        if path == "/":
             body = Path("index.html").read_text()
             status_line = "HTTP/1.1 200 OK\n"
-            headers = "Content-Type: text/html\n"
-            headers += f"Content-Length: {len(body)}\n"
-            response_msg = status_line + headers + "\n" + body
-            cs.send(response_msg.encode())
-
-        elif path == "/info/C":
-            body = Path("index.html").read_text()
-            status_line = "HTTP/1.1 200 OK\n"
-            headers = "Content-Type: text/html\n"
-            headers += f"Content-Length: {len(body)}\n"
-            response_msg = status_line + headers + "\n" + body
-            cs.send(response_msg.encode())
-
-        elif path == "/info/G":
-            body = Path("index.html").read_text()
-            status_line = "HTTP/1.1 200 OK\n"
-            headers = "Content-Type: text/html\n"
-            headers += f"Content-Length: {len(body)}\n"
-            response_msg = status_line + headers + "\n" + body
-            cs.send(response_msg.encode())
-
-        elif path == "/info/T":
-            body = Path("index.html").read_text()
-            status_line = "HTTP/1.1 200 OK\n"
-            headers = "Content-Type: text/html\n"
-            headers += f"Content-Length: {len(body)}\n"
-            response_msg = status_line + headers + "\n" + body
-            cs.send(response_msg.encode())
-
-        elif path == "/Error.html":
+        elif path.startswith("/info/"):
+            slices = path.split("/")
+            resource = slices[2]
+            try:
+                body = Path(f"{resource}.html").read_text()
+                status_line = "HTTP/1.1 200 OK\n"
+            except FileNotFoundError:
+                body = Path("Error.html").read_text()
+                status_line = "HTTP/1.1 404 NOT_FOUND\n"
+        else:
             body = Path("Error.html").read_text()
-            status_line = "HTTP/1.1 200 OK\n"
-            headers = "Content-Type: text/html\n"
-            headers += f"Content-Length: {len(body)}\n"
-            response_msg = status_line + headers + "\n" + body
-            cs.send(response_msg.encode())
-
-        elif path == "/index.html":
-            body = Path("index.html").read_text()
-            status_line = "HTTP/1.1 200 OK\n"
-            headers = "Content-Type: text/html\n"
-            headers += f"Content-Length: {len(body)}\n"
-            response_msg = status_line + headers + "\n" + body
-            cs.send(response_msg.encode())
+            status_line = "HTTP/1.1 404 NOT_FOUND\n"
+        headers = "Content-Type: text/html\n"
+        headers += f"Content-Length: {len(body)}\n"
+        response_msg = status_line + headers + "\n" + body
+        cs.send(response_msg.encode())
 
 Handler = TestHandler
 

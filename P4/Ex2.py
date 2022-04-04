@@ -12,7 +12,7 @@ def process_client(s):
 
     print("Message FROM CLIENT: ")
 
-    lines = req.split('\n')
+    lines = req.splitlines()
     req_line = lines[0]
     slices = req_line.split(" ")
     method = slices[0]  # "GET"
