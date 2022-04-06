@@ -22,7 +22,7 @@ def process_client(s):
     termcolor.cprint(req_line, "green")
 
     if path == "/info/A":
-        body = Path("index.html").read_text()
+        body = Path("A.html").read_text()
         status_line = "HTTP/1.1 200 OK\n"
         headers = "Content-Type: text/html\n"
         headers += f"Content-Length: {len(body)}\n"
