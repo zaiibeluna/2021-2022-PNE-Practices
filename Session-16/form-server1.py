@@ -2,6 +2,7 @@ import http.server
 import socketserver
 import termcolor
 from pathlib import Path
+from jinja2 import Template
 
 # Define the Server's port
 PORT = 8080
