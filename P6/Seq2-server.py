@@ -5,6 +5,7 @@ from pathlib import Path
 from urllib.parse import urlparse, parse_qs
 import os
 from Sequence import Seq
+import jinja2 as j
 
 PORT = 8080
 SEQUENCES = ["U5", "ADA", "FRAT1", "FXN", "RNU6_269P"]
@@ -112,6 +113,8 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
 
         return
 
+Handler = TestHandler
+
 with socketserver.TCPServer(("", PORT), Handler) as httpd:
 
     print("Serving at PORT", PORT)
@@ -122,9 +125,3 @@ with socketserver.TCPServer(("", PORT), Handler) as httpd:
         print("")
         print("Stoped by the user")
         httpd.server_close()
-
-
-
-
-
-
