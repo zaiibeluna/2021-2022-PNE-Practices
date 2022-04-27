@@ -14,10 +14,9 @@ genes_dict = {"SRCAP": "ENSG00000080603",
               "KDR": "ENSG00000128052",
               "ANK2": "ENSG00000145362"}
 
-gene_name = input("Enter the name of a gene:")
-
 SERVER = 'rest.ensembl.org'
-ENDPOINT = '/sequence/id/' + genes_dict[gene_name]
+for gene in genes_dict:
+    ENDPOINT = '/sequence/id/' + genes_dict[gene]
 PARAMS = '?content-type=application/json'
 URL = SERVER + ENDPOINT + PARAMS
 
@@ -33,10 +32,10 @@ try:
     print(f"Response received!: {r1.status} {r1.reason}\n")
     data1 = r1.read().decode("utf-8")
     data1 = json.loads(data1)
-    print(f"Gene: {gene_name} \nDescription: {data1['desc']}")
+    print(f"Gene: {gene} \nDescription: {data1['desc']}")
     sequence = Seq(data1['seq'])
     print(sequence.info())
-    
+
 except ConnectionRefusedError:
     print("ERROR! Cannot connect to the Server")
     exit()
