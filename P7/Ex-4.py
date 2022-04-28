@@ -36,6 +36,7 @@ try:
     print(f"Gene: {gene_name} \nDescription: {data1['desc']}")
     sequence = Seq(data1['seq'])
     print(sequence.info())
+
     
 except ConnectionRefusedError:
     print("ERROR! Cannot connect to the Server")

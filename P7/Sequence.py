@@ -92,3 +92,4 @@ class Seq:
                 result[base] = self.count_base(base)
                 add = result[base] + result[base]
             return add
+
