@@ -93,3 +93,6 @@ class Seq:
                 add = result[base] + result[base]
             return add
 
+    def frequent(self):
+
+
