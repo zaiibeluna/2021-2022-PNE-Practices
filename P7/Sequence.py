@@ -4,20 +4,6 @@ class Seq:
     BASES_ALLOWED = ['A', 'C', 'G', 'T']
     COMPLEMENTS = {"A": "T", "T": "A", "C": "G", "G": "C"}
 
-    def __init__(self, bases="NULL" ):
-        # Initialize the sequence with the value
-        # passed as argument when creating the object
-        self.bases = bases
-        if self.bases == "NULL":
-            self.bases = bases
-            print("NULL Seq created!")
-        elif self.are_bases_valid(bases):
-            self.bases = bases
-            print("New sequence created!")
-        else:
-            self.bases = "ERROR"
-            print("INVALID sequence detected!")
-
     @staticmethod
     def are_bases_valid(bases):
         valid = len(bases) != 0
@@ -29,13 +15,21 @@ class Seq:
                 valid = False
         return valid
 
+    def __init__(self, bases="NULL" ):
+        if bases == "NULL":
+            self.bases = bases
+            print("NULL Seq created!")
+        elif Seq.are_bases_valid(bases):
+            self.bases = bases
+            print("New sequence created!")
+        else:
+            self.bases = "ERROR"
+            print("INVALID sequence detected!")
+
     def __str__(self):
-        """Method called when the object is being printed"""
-        # -- We just return the string with the sequence
         return self.bases
 
     def len(self):
-        """Calculate the length of the sequence"""
         if self.bases == "NULL" or self.bases == "ERROR":
             return 0
         return len(self.bases)
@@ -54,7 +48,6 @@ class Seq:
     def reverse(self):
         if self.bases == "NULL" or self.bases == "ERROR":
             return self.bases
-
         return self.bases[::-1]
 
     def complements(self):
@@ -83,16 +76,6 @@ class Seq:
             result += f"{base}: {count} ({(count * 100) / self.len():.1f}%)\n"
         return result
 
-    def add(self):
-        if self.bases == "NULL" or self.bases == "ERROR":
-            print("We could not multiply the bases since the sequence is not correct.")
-        else:
-            result = {}
-            for base in Seq.BASES_ALLOWED:
-                result[base] = self.count_base(base)
-                add = result[base] + result[base]
-            return add
 
-    def frequent(self):
 
 
