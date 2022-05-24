@@ -3,150 +3,133 @@ import socketserver
 import termcolor
 from pathlib import Path
 from urllib.parse import urlparse, parse_qs
-import jinja2 as j
-import commands
+import server as su
+
 
 PORT = 8080
-
-HTML_folder = "./html_files/"
-
-def read_file(filename):
-    contents = Path(HTML_folder + filename).read_text()
-    contents = j.Template(contents)
-    return contents
+ENDPOINTS = ["/", "/list_species", "/karyotype", "/chromosome", "/sequence_gene", "/gene_info", "/calculate_gene", "/list_gene"]
 
 socketserver.TCPServer.allow_reuse_address = True
+
+def handle_karyotype(parameters):
+    has_error = False
+    status = 400
+    contents = ""
+    if len(parameters) == 1:
+        try:
+            specie = parameters['specie'][0]
+            status, contents = su.karyotype(specie)
+        except(KeyError, IndexError):
+            has_error = True
+    else:
+        has_error = True
+
+    return status, contents, has_error
 
 class TestHandler(http.server.BaseHTTPRequestHandler):
 
     def do_GET(self):
-        """This method is called whenever the client invokes the GET method
-        in the HTTP protocol request"""
         termcolor.cprint(self.requestline, 'green')
+        termcolor.cprint(self.path, "blue")
 
-        url_path = urlparse(self.path)
-        path = url_path.path
-        query = url_path.query
+        url = urlparse(self.path)
+        endpoint = url.path
+        parameters = parse.query(url.query)
+        print("Endpoint:", endpoint)
+        print("Parameters:", parameters)
 
-        command_dict = parse_qs(query)
-
-        t.cprint(path, "yellow")
-        t.cprint(query, "green")
-        t.cprint(command_dict, "blue")
-
-        if path == "/":
-            contents = Path("./html/index.html").read_text()
-        elif path == "/favicon.ico":
-            contents = Path("./html/index.html").read_text()
-        elif path == "/list":
-            ENDPOINT = "/info/species"
-            PARAMS = "?content-type=application/json"
-
-            species_dict = commands.make_request(ENDPOINT, PARAMS)
-            species = ""
-            limit = int(command_dict["limit"][0])
-
-            if limit > len(species_dict["species"]) or 0 > limit:
-                contents = read_file("error.html").render(context={"error": "Please enter a validlimit value, between o and" + str(len(species_dict["species"]))})
-            else:
-                for b in range(o, int(limit)):
-                    species = species + "<br>&nbsp&nbsp&nbsp&nbsp· " + species_dict["species"][b]["name"]
-
-                contents = read_file(path[1:] + ".html").render(context={"length": str(len(species_dict["species"])), "limit": limit, "species": species})
-
-        elif path == "/karyotype":
-            ENDPOINT = "/info/assembly/" + command_dict["species"][0].strip()
-            PARAMS = "?content-type=application/json"
-
-            karyotype_dict = commands.make_request(ENDPOINT, PARAMS)
-
-            try:
-                chromosomes = ""
-                for e in karyotype_dict["karyotype"]:
-                    chromosomes = chromosomes + "<br>&nbsp&nbsp&nbsp&nbsp· " + e
-                if chromosomes.replace("<br>&nbsp&nbsp&nbsp&nbsp· ", "") == "":
-                    contents = read_file(path[1:] + ".html").render(context={"karyotype": chromosomes})
-
+        has_error = False
+        contents = ""
+        status = 400 # bad request
+        if endpoint in ENDPOINTS:
+            if endpoint == "/":
+                status = 200
+                contents = Path("./html/index.html").read_text()
+            elif endpoint == "/list_species":
+                if len(parameters) == 0:
+                    status, contents = su.list_species()
+                elif len(parameters) == 1:
+                    try:
+                        limit = int(parameters['limit'][0])
+                        status, contents = su.list_species(limit)
+                    except(KeyError, ValueError, IndexError):
+                        has_error = True
                 else:
-                    contents = read_file(path[1:] + ".html").render(context={"karyotype": chromosomes})
+                    has_error = True
+            elif endpoint == "/karyotype":
+                status, contents, has_error = handle_karyotype(parameters)
 
-            except KeyError:
-                contents = read_file("error.html").render(context={"error": "karyotype for " + command_dict["species"][0] + " not found"})
-
-        elif path == "/chromosome":
-            ENDPOINT = "/info/assembly/" + command_dict["species"][0].strip()
-            PARAMS = "?content-type=application/json"
-
-            species_dict = commands.make_request(ENDPOINT, PARAMS)
-
-            try:
-                chromosome_dict = species_dict["top_level_region"]
-                correct = False
-                i = 0
-
-                while not correct and i < len(chromosome_dict):
-                    chromosome = chromosome_dict[i]
-                    if chromosome["name"] == command_dict["chormosome"]:
-                        correct = True
-                    print(correct)
-                    i += 1
-                chromosome_length = chromosome["length"]
-                contents = read_file(path[1:] + ".html").render(context={"Chromosome": chromosome["name"], "chromosome_length": chromosome_length})
-            except IndexError:
-                contents = read_file("error.html").render(context={"error": "Chromosome for " + command_dict["chromosome"][0] + " not found"})
-            except KeyError:
-                contents = read_file("error.html").render(context={"error": "karyotype for " + command_dict["species"][0] + " not found"})
-
-        elif path =="/sequence_gene":
-            try:
-                ENDPOINT = "/sequence/id/"
-                PARAMS = "?content-type=application/json"
-
-                gene_dict = commands.make_request(ENDPOINT + command_dict["id"][0], PARAMS)
-                seq = Seq(gene_dict["seq"])
-                if seq.valid_sequence():
-                    contents = read_file(sequence_gene.html).render(context={"seq": str(seq), "gene": command_dict["id"][0]})
+            elif endpoint == "/chromosome":
+                if len(parameters) == 2:
+                    try:
+                        specie = parameters['specie'][0]
+                        chromo = parameters['chromo'][0]
+                        status, contents = su.chromosome(specie, chromo)
+                    except(KeyError, IndexError):
+                        has_error = True
                 else:
-                    contents = "Incorrect sequence, please enter a correct one."
-            except KeyError:
-                contents = read_file("error.html").render(context={"error": "Gene with id " + command_dict["id"][0] + " not found"})
+                    has_error = True
 
-        elif path =="/calculate_gene":
-            try:
-                ENDPOINT = "/sequence/id/"
-                PARAMS = "?content-type=application/json"
-
-                gene_dict = commands.make_request(ENDPOINT + command_dict["id"][0], PARAMS)
-                seq = Seq(gene_dict["seq"])
-                if not seq.valid_sequence():
-                    contents = read_file("error.html").render(context={"error": "Incorrect sequence, please enter a correct one."})
+            elif endpoint == "sequence_gene":
+                if len(parameters) == 1:
+                    try:
+                        gene = parameters['gene'][0]
+                        status, contents = su.sequence_gene(gene)
+                    except(KeyError, IndexError):
+                        has_error = True
                 else:
-                    n_bases = seq.bases()
-                    percentages = seq.base_percentage()
-                    seq_len = seq.len()
-                    contents = "\nTotal length: " + str(seq_len) + "\n"
-                    for p in percentages:
-                        contents = contents + str(p) + ": " + str(n_bases[p]) + " (" + str(percentages[p]) + "%)\n"
-                    contents = contents.replace("\n", "<p><p>")
-                    contents = read_file(path[1:] + ".html").render(context={"result": contents, "seq": seq})
-            except KeyError:
-                contents = read_file("error.html").render(context={"error": "Gene with id " + command_dict["id"][0] + " not found"})
+                    has_error = True
 
-        self.send_response(200)
+            elif endpoint == "/gene_info":
+                if len(parameters) == 1:
+                    try:
+                        gene = parameters['gene'][0]
+                        status, contents = su.gene_info(gene)
+                    except(KeyError, IndexError):
+                        has_error = True
+                else:
+                    has_error = True
+
+            elif  endpoint == "/calculate_gene":
+                if len(parameters) == 1:
+                    try:
+                        gene = parameters['gene'][0]
+                        status, contents = su.calculate_gene(gene)
+                    except(KeyError, IndexError):
+                        has_error = True
+                else:
+                    has_error = True
+
+            elif endpoint == "/geneList":
+                if len(parameters) == 3:
+                    try:
+                        chromo = parameters['chromo'][0]
+                        start = int(parameters['start'][0])
+                        end = int(parameters['end'][0])
+                        status, contents = su.gene_list(chromo, start, end)
+                    except(KeyError, ValueError, IndexError):
+                        has_error = True
+                else:
+                    has_error = True
+
+        else:
+            has_error = True
+
+        if has_error:
+            contents = Path("./html/error.html").read_text()
+
+        self.send_response(status)
         self.send_header('Content-Type', 'text/html')
-        self.send_header('Content-Length', len(str.encode(contents)))
+        self.send_header('Content-Length', str(len(contents.encode())))
         self.end_headers()
-        self.wfile.write(str.encode(contents))
+        self.wfile.write(contents.encode())
 
         return
 
 
 Handler = TestHandler
-
 with socketserver.TCPServer(("", PORT), Handler) as httpd:
-
     print("Serving at PORT", PORT)
-
     try:
         httpd.serve_forever()
     except KeyboardInterrupt:
