@@ -13,7 +13,7 @@ OK = 200
 BAD_REQUEST = 400
 
 
-def list_species(limit=None):
+def species(limit=None):
     import http.client
     import json
     from pathlib import Path
@@ -81,7 +81,7 @@ def karyotype(specie):
     return status, contents
 
 
-def chromosome(specie, chromo):
+def length_chromosome(specie, chromo):
     import http.client
     import json
     from pathlib import Path
@@ -100,14 +100,19 @@ def chromosome(specie, chromo):
             top_level_region = data['top_level_region']
             length = 0
             for chromosome in top_level_region:
-                if chromosome['name'] == chromo:
+                if chromosome['number'] == chromo and chromosome['number'] >= 0:
+                    specie = chromosome['specie']
                     length = chromosome['length']
                     break
-
+                elif chromosome['number'] <= 0:
+                    status = BAD_REQUEST
+                    contents = Path("./html/error.html").read_text()
             context = {
+                "specie": specie
+                "number": chromo,
                 "length": length,
             }
-            contents = read_template_html_file("./html/chromosome.html").render(context=context)
+            contents = read_template_html_file("./html/length_chromosome.html").render(context=context)
         except KeyError:
             status = BAD_REQUEST
             contents = Path("./html/error.html").read_text()

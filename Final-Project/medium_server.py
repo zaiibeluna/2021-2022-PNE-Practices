@@ -7,7 +7,7 @@ import server as su
 
 
 PORT = 8080
-ENDPOINTS = ["/", "/list_species", "/karyotype", "/chromosome", "/sequence_gene", "/gene_info", "/calculate_gene", "/list_gene"]
+ENDPOINTS = ["/", "/species", "/karyotype", "/length_chromosome", "/sequence_gene", "/gene_info", "/calculate_gene", "/list_gene"]
 
 socketserver.TCPServer.allow_reuse_address = True
 
@@ -45,13 +45,13 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
             if endpoint == "/":
                 status = 200
                 contents = Path("./html/index.html").read_text()
-            elif endpoint == "/list_species":
+            elif endpoint == "/species":
                 if len(parameters) == 0:
-                    status, contents = su.list_species()
+                    status, contents = su.species()
                 elif len(parameters) == 1:
                     try:
                         limit = int(parameters['limit'][0])
-                        status, contents = su.list_species(limit)
+                        status, contents = su.species(limit)
                     except(KeyError, ValueError, IndexError):
                         has_error = True
                 else:
@@ -59,18 +59,18 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
             elif endpoint == "/karyotype":
                 status, contents, has_error = handle_karyotype(parameters)
 
-            elif endpoint == "/chromosome":
+            elif endpoint == "/length_chromosome":
                 if len(parameters) == 2:
                     try:
                         specie = parameters['specie'][0]
-                        chromo = parameters['chromo'][0]
-                        status, contents = su.chromosome(specie, chromo)
+                        chromo = int(parameters['chromo'][0])
+                        status, contents = su.length_chromosome(specie, chromo)
                     except(KeyError, IndexError):
                         has_error = True
                 else:
                     has_error = True
 
-            elif endpoint == "sequence_gene":
+            elif endpoint == "/sequence_gene":
                 if len(parameters) == 1:
                     try:
                         gene = parameters['gene'][0]
@@ -100,13 +100,13 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                 else:
                     has_error = True
 
-            elif endpoint == "/geneList":
+            elif endpoint == "/list_gene":
                 if len(parameters) == 3:
                     try:
                         chromo = parameters['chromo'][0]
                         start = int(parameters['start'][0])
                         end = int(parameters['end'][0])
-                        status, contents = su.gene_list(chromo, start, end)
+                        status, contents = su.list_gene(chromo, start, end)
                     except(KeyError, ValueError, IndexError):
                         has_error = True
                 else:
@@ -125,7 +125,6 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
         self.wfile.write(contents.encode())
 
         return
-
 
 Handler = TestHandler
 with socketserver.TCPServer(("", PORT), Handler) as httpd:
